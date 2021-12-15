@@ -10,7 +10,6 @@
 import os
 import git #GitPython
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
-print(f"The script is running from directory: {DIRECTORY}")
 GIT_COMMIT_DATE = git.Repo(path=DIRECTORY).head.commit.committed_datetime
 
 

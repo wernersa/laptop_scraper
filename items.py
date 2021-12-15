@@ -33,7 +33,7 @@ class LaptopItem(scrapy.Item):
     condition = scrapy.Field()
     address = scrapy.Field()
     images = scrapy.Field()
-    meta = Field()
+    meta = scrapy.Field()
 
     pass
 
