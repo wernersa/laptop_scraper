@@ -10,7 +10,8 @@
 import os
 import git #GitPython
 DIRECTORY = os.path.dirname(os.path.realpath(__file__))
-GIT_COMMIT_DATE = git.Repo(path=DIRECTORY).head.commit.committed_datetime
+GIT_COMMIT_DATE = git.Repo(path=DIRECTORY).head.commit.committed_datetime.replace(tzinfo=None)
+print(f"This repo was last commited: {GIT_COMMIT_DATE}")
 
 
 BOT_NAME = 'laptop_scraper'
@@ -75,7 +76,7 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    #'laptop_scraper.pipelines.PrintLaptop': 300,
+    'laptop_scraper.pipelines.AddMeta': 300,
     'laptop_scraper.pipelines.MongoDBPipeline': 400
 }
 

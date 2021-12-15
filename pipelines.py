@@ -10,27 +10,25 @@ import datetime
 
 settings = get_project_settings()
 
-class PrintLaptop:
-    def process_item(self, item, spider):
-        print(item)
-        return item
 
+class AddMeta:
+    def __init__(self, time_git_commit):
+        self.time_git_commit = time_git_commit
 
-class AddMeta(object):
-    def __init__(self, git_version):
-        meta_data = {'time_parsed': datetime.datetime.now(),
-                     'git_version': settings.get('GIT_COMMIT_DATE')}
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(time_git_commit = crawler.settings.get('GIT_COMMIT_DATE'))
     
     def process_item(self, item, spider):
-        item['meta'] = self.meta_data
+        item['meta'] = {'time_parsed': datetime.datetime.now(),
+                        'time_git_commit': self.time_git_commit}
+
         return item
 
 
 class MongoDBPipeline:
     def __init__(self):
-        conn = pymongo.MongoClient(
-            settings.get('MONGO_URI')
-        )
+        conn = pymongo.MongoClient(settings.get('MONGO_URI'))
         db = conn[settings.get('MONGO_DB_NAME')]
         self.collection = db[settings['MONGO_COLLECTION_NAME']]
         
