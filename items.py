@@ -8,6 +8,7 @@ import dateparser
 from itemloaders.processors import Join, MapCompose, Compose
 from w3lib.html import remove_tags
 
+
 def filter_price(value):
     # Example strings:
     #   "2\xa0800 kr"
@@ -16,8 +17,10 @@ def filter_price(value):
     value = value.replace('\xa0', '')
     return int(value)
 
+
 def extract_date(date):
     return dateparser.parse(date, languages=["nb"])
+
 
 class LaptopItem(scrapy.Item):
     # define the fields for your item here like:
