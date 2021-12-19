@@ -23,7 +23,7 @@ NEWSPIDER_MODULE = 'laptop_scraper.spiders'
 # MONGO DB SETTINGS
 MONGO_URI="mongodb://127.0.0.1:27017/"
 MONGO_DB_NAME="scrapy"
-MONGO_COLLECTION_NAME=BOT_NAME
+# The collection name is the same as the spider
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

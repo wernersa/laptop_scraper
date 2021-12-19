@@ -27,20 +27,25 @@ class AddMeta:
 
 
 class MongoDBPipeline:
-    def __init__(self):
+    def open_spider(self, spider):
         conn = pymongo.MongoClient(settings.get('MONGO_URI'))
         db = conn[settings.get('MONGO_DB_NAME')]
-        self.collection = db[settings['MONGO_COLLECTION_NAME']]
+        self.collection = db[spider.name]
         
         # Create a dictionary of currently parsed items
         self.parsed = {x["_id"]: x["last_changed"] for x in self.collection.find({},{ "_id": 1, "last_changed": 1})}
+
+        self.client = pymongo.MongoClient(self.mongo_uri)
+        self.db = self.client[self.mongo_db]
+
+    def close_spider(self, spider):
+        self.client.close()
 
     def process_item(self, item, spider):
         if not isinstance(item, LaptopItem):
             return item
 
-        # Already parsed:
-        
+        # When item is previously parsed:
         if item["_id"] in self.parsed:
             if item["last_changed"] == self.parsed.get(item["_id"]):
                 print(f"Skipping item:  {item['last_changed']} & {self.parsed.get(item['_id'])}")
@@ -56,7 +61,7 @@ class MongoDBPipeline:
                 self.collection.delete_one(query)
         
         
-        # Insert new item, or item with old values appended
+        # Insert item to database
         self.collection.insert_one(dict(item))
 
         return item
