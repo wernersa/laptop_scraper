@@ -5,8 +5,8 @@ from scrapy.loader import ItemLoader
 from scrapy.loader.processors import Join, Compose, MapCompose, TakeFirst
 from laptop_scraper.items import LaptopItem
 
-class FinnSpider(CrawlSpider):
-    name = 'finn'
+class FinnLaptopSpider(CrawlSpider):
+    name = 'FinnLaptop'
     allowed_domains = ['finn.no']
     start_urls = ['https://www.finn.no/bap/forsale/search.html?abTestKey=suggestions&product_category=2.93.3215.43&search_type=SEARCH_ID_BAP_ALL&sort=PUBLISHED_DESC']
 

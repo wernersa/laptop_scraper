@@ -28,18 +28,15 @@ class AddMeta:
 
 class MongoDBPipeline:
     def open_spider(self, spider):
-        conn = pymongo.MongoClient(settings.get('MONGO_URI'))
-        db = conn[settings.get('MONGO_DB_NAME')]
-        self.collection = db[spider.name]
+        self.conn = pymongo.MongoClient(settings.get('MONGO_URI'))
+        self.db = self.conn[settings.get('MONGO_DB_NAME')]
+        self.collection = self.db[spider.name]
         
         # Create a dictionary of currently parsed items
         self.parsed = {x["_id"]: x["last_changed"] for x in self.collection.find({},{ "_id": 1, "last_changed": 1})}
 
-        self.client = pymongo.MongoClient(self.mongo_uri)
-        self.db = self.client[self.mongo_db]
-
     def close_spider(self, spider):
-        self.client.close()
+        self.conn.close()
 
     def process_item(self, item, spider):
         if not isinstance(item, LaptopItem):
