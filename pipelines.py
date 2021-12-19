@@ -40,6 +40,7 @@ class MongoDBPipeline:
             return item
 
         # Already parsed:
+        
         if item["_id"] in self.parsed:
             if item["last_changed"] == self.parsed.get(item["_id"]):
                 print(f"Skipping item:  {item['last_changed']} & {self.parsed.get(item['_id'])}")
@@ -47,14 +48,13 @@ class MongoDBPipeline:
             else:
                 query = {"_id": item["_id"]}
                 print(f"Deleting old item {query}, and inserting new with old values appended.")
-                previously_stored = self.collection.find_one(query)
 
-                # for k in previously_stored.keys():
-                for k in ["price", "last_changed"]:
-                    if isinstance(previously_stored[k], list):
-                        item[k].append(previously_stored[k].pop())
+                # TODO: Store previous values of ["price", "last_changed"]
+                # previously_stored = self.collection.find_one(query)
+                # item[k].append(previously_stored[k].pop())
                 
                 self.collection.delete_one(query)
+        
         
         # Insert new item, or item with old values appended
         self.collection.insert_one(dict(item))

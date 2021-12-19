@@ -2,6 +2,7 @@ import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.loader import ItemLoader
+from scrapy.loader.processors import Join, Compose, MapCompose, TakeFirst
 from laptop_scraper.items import LaptopItem
 
 class FinnSpider(CrawlSpider):
@@ -18,18 +19,28 @@ class FinnSpider(CrawlSpider):
     )
 
     def parse_item(self, response):
-        article_body = response.xpath('/html/body/main/div/div[3]/div[1]')
 
         item = LaptopItem()
-        item['_id'] = response.xpath('//tr[th="FINN-kode"]/th/following-sibling::td[1]/span/text()').get()
-        item['_url'] = response.url
-        item['last_changed'] = response.xpath('//tr[th="Sist endret"]/th/following-sibling::td[1]/text()').get()
-        item['title'] = article_body.xpath('article/section[1]/h1/text()').get()
-        item['price'] = article_body.xpath('article/section[1]/div[2]/text()').get()
-        item['body'] = article_body.xpath('article/section[2]/div/div/div/div/text()').get()
-        item['brand'] = article_body.xpath('.//tr[th="Merke"]/th/following-sibling::td[1]/text()').get()
-        item['condition'] = article_body.xpath('.//tr[th="Tilstand"]/th/following-sibling::td[1]/text()').get()
-        item['address'] = article_body.xpath('div/h3/text()').get()
-        item['images'] = article_body.xpath('.//img[@alt="Galleribilde"]').xpath('@src').getall()
+        selector = scrapy.Selector(response)
+        loader = ItemLoader(item, selector=selector)
 
-        return ItemLoader(item=item, response=response).load_item()
+        loader.default_input_processor = Compose()
+        loader.default_output_processor = Compose(TakeFirst())
+
+        loader.add_value('url', response.url)
+
+        # Select content scope of the page that is relevant
+        content_loader = loader.nested_xpath(item.content_body)
+
+        # iterate over fields and add xpaths to the loader
+        for key, field in item.fields.items():
+            if field.get('xpath'):
+                if field.get('xpath')[0] != "/":
+                    # Use content scope xpath when relative xpaths
+                    content_loader.add_xpath(key, field.get('xpath'))
+                else:
+                    # Use top level scope xpath when absolute xpaths
+                    loader.add_xpath(key, field.get('xpath'))
+
+        yield loader.load_item()
+
