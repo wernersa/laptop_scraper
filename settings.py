@@ -18,6 +18,7 @@ BOT_NAME = 'laptop_scraper'
 
 SPIDER_MODULES = ['laptop_scraper.spiders']
 NEWSPIDER_MODULE = 'laptop_scraper.spiders'
+COMMANDS_MODULE = 'laptop_scraper.commands'
 
 
 # MONGO DB SETTINGS
