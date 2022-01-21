@@ -33,6 +33,7 @@ class FinnLaptopSpider(CrawlSpider):
         content_loader = loader.nested_xpath(item.content_body)
 
         # iterate over fields and add xpaths to the loader
+        print(f'The item keys are the following: {item.keys()}')
         for key, field in item.fields.items():
             if field.get('xpath'):
                 if field.get('xpath')[0] != "/":
